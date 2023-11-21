@@ -3,6 +3,7 @@ import { readdirSync } from "fs";
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import 'dotenv/config'
+import mongoose from 'mongoose'
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.MessageContent], shards: "auto", partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.Reaction, Partials.GuildScheduledEvent, Partials.User, Partials.ThreadMember] });
 
@@ -11,6 +12,11 @@ client.slashcommands = new Collection()
 client.commandaliases = new Collection()
 
 const rest = new REST({ version: '10' }).setToken(process.env.BOT_TOKEN);
+
+await mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_IP}/?retryWrites=true&w=majority`)
+    .then(() => {
+        console.log('connection established to the database')
+    })
 
 const commands = []
 readdirSync('./src/commands/normal').forEach(async file => {
@@ -51,6 +57,7 @@ client.on("ready", async () => {
     } catch (err) {
         console.error(err);
     }
+
     console.log(`${client.user.username} ready`);
 })
 
