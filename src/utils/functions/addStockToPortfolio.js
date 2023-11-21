@@ -1,6 +1,6 @@
 import Portfolio from "../db/portfolio.js";
 
-export default async function addStockToPortfolio(id, symbol, quantity) {
+export default async function addStockToPortfolio(id, symbol, quantity, purchasePrice, exchangeRate) {
     try {
         const portfolio = await Portfolio.findOne({ userId: id });
         if (!portfolio) {
@@ -13,11 +13,16 @@ export default async function addStockToPortfolio(id, symbol, quantity) {
         }
 
         let quantityToAdd = parseInt(quantity)
+        let purchasedPrice = parseFloat(purchasePrice)
         const existingStock = portfolio.stocks.find((stock) => stock.symbol === symbol);
         if (existingStock) {
             existingStock.quantity += quantityToAdd;
         } else {
-            portfolio.stocks.push({ symbol, quantity });
+            if (exchangeRate == null) {
+                portfolio.stocks.push({ symbol, quantity: quantityToAdd, purchasePrice: purchasedPrice });
+            } else {
+                portfolio.stocks.push({ symbol, quantity: quantityToAdd, purchasePrice: purchasedPrice, exchangeRate });
+            }
         }
 
         await portfolio.save();

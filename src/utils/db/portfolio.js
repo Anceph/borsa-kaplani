@@ -9,6 +9,13 @@ const stockSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    purchasePrice: {
+        type: Number,
+        required: true
+    },
+    exchangeRate: {
+        type: Number
+    }
 });
 
 const portfolioSchema = new mongoose.Schema({

@@ -14,7 +14,7 @@ export default {
         const balance = userData.balance.toFixed(2)
 
         const embed = new EmbedBuilder()
-            .setDescription(`${balance}₺`)
+            .setDescription(`${balance} ₺`)
             .setColor('Yellow')
             .setThumbnail(user.displayAvatarURL())
 

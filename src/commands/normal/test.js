@@ -10,9 +10,9 @@ export default {
 
         const symbol = await yahooFinance.quote(`${args[0]}`)
         if (symbol.exchange == "IST") {
-            message.reply(`${args[0]}: ${symbol.regularMarketPrice}₺`)
+            message.reply(`${args[0]}: ${symbol.regularMarketPrice} ₺`)
         } else {
-            message.reply(`${args[0]}: ${symbol.regularMarketPrice}$`)
+            message.reply(`${args[0]}: ${symbol.regularMarketPrice} $`)
         }
     }
 };
