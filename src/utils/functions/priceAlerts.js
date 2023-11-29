@@ -22,8 +22,7 @@ const checkPriceAlerts = async (client) => {
                     .setColor('Orange');
 
                 userObject.send({ content: '', embeds: [embed] });
-
-                // Remove the alarm from the user's alerts in the database
+                
                 await User.updateOne(
                     { id: user.id },
                     { $pull: { priceAlerts: { quote: alert.quote } } }
