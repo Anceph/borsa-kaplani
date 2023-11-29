@@ -33,8 +33,9 @@ export default {
         const quote = interaction.options.getString('hisse')
 
         const stockInfo = await getStockPrice(`${quote}`)
+        console.log(stockInfo)
         if (stockInfo == null) {
-            errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı.`)
+            errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
             return interaction.editReply({ content: '', embeds: [errorEmbed] })
         }
 

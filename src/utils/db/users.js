@@ -8,5 +8,12 @@ export default mongoose.model('User', new mongoose.Schema({
         daily: { type: Date },
         work: { type: Date },
         command: { type: Date }
-    }
+    },
+    priceAlerts: [
+        {
+            quote: { type: String, required: true },
+            targetPrice: { type: Number, required: true },
+            currentPrice: { type: Number, required: true },
+        },
+    ],
 }))

@@ -103,7 +103,7 @@ export default {
         } else if (orderType == "satis") {
             let quoteInfo = await getStockPrice(`${quote}`)
             if (quoteInfo == null) {
-                errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı.`)
+                errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
             if (quoteInfo.marketState != "REGULAR") {

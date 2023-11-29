@@ -17,6 +17,7 @@ export default async function addStockToPortfolio(id, symbol, quantity, purchase
         const existingStock = portfolio.stocks.find((stock) => stock.symbol === symbol);
         if (existingStock) {
             existingStock.quantity += quantityToAdd;
+            existingStock.purchasePrice = ((existingStock.purchasePrice * existingStock.quantity) + (purchasePrice * quantity)) / (existingStock.quantity + quantity)
         } else {
             if (exchangeRate == null) {
                 portfolio.stocks.push({ symbol, quantity: quantityToAdd, purchasePrice: purchasedPrice });

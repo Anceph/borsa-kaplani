@@ -4,6 +4,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import 'dotenv/config'
 import mongoose from 'mongoose'
+import checkPriceAlerts from "./src/utils/functions/priceAlerts.js";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.MessageContent], shards: "auto", partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.Reaction, Partials.GuildScheduledEvent, Partials.User, Partials.ThreadMember] });
 
@@ -54,6 +55,8 @@ client.on("ready", async () => {
             Routes.applicationCommands(client.user.id),
             { body: slashcommands },
         );
+
+        setInterval(() => checkPriceAlerts(client), 10000)
     } catch (err) {
         console.error(err);
     }
