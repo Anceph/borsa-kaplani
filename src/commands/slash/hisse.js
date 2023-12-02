@@ -38,6 +38,10 @@ export default {
             errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
             return interaction.editReply({ content: '', embeds: [errorEmbed] })
         }
+        if (!stockInfo.regularMarketVolume) {
+            errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
+            return interaction.editReply({ content: '', embeds: [errorEmbed] })
+        }
 
         let volume = stockInfo.regularMarketVolume.toLocaleString('en-US').replace(/,/g, '.');
 

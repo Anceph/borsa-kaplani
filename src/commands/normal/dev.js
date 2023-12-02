@@ -47,5 +47,20 @@ export default {
             await data.updateOne({ $set: { role: `${args[2]}` } })
             return message.reply(`Changed users.${args[1]}.role to ${args[2]}`)
         }
+        if (args[0] == "give") {
+            const data = await User.findOne({ id: args[1] })
+            const giveBalance = parseFloat(args[2])
+            data.balance += giveBalance
+            await data.save()
+            return message.reply(`Added ${giveBalance} to users.${args[2]}.balance (Currently at ${data.balance})`)
+        }
+
+        if (args[0] == "take") {
+            const data = await User.findOne({ id: args[1] })
+            const giveBalance = parseFloat(args[2])
+            data.balance -= giveBalance
+            await data.save()
+            return message.reply(`Removed ${giveBalance} from users.${args[2]}.balance (Currently at ${data.balance})`)
+        }
     }
 };
