@@ -59,10 +59,12 @@ export default {
                 errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
+            // TODO: açılım öncesi emir vermeyi ekleyene kadar kapalı
+            /*
             if (quoteInfo.marketState != "REGULAR") {
                 errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
-            }
+            }*/
 
             if (quoteInfo.exchange === "IST") {
                 let price = quoteInfo.regularMarketPrice
@@ -106,10 +108,13 @@ export default {
                 errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
+
+            // TODO: açılım öncesi emir vermeyi ekleyene kadar kapalı
+            /*
             if (quoteInfo.marketState != "REGULAR") {
                 errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
-            }
+            }*/
 
             if (quoteInfo.exchange === "IST") {
                 let price = quoteInfo.regularMarketPrice
