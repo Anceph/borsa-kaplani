@@ -62,6 +62,10 @@ export default {
         if (args[0] == "take") {
             const data = await User.findOne({ id: args[1] })
             const giveBalance = parseFloat(args[2])
+            if (!data) {
+                data = new User({ id: args[1] })
+                return message.reply(`Created database entry for the user, try again`)
+            }
             data.balance -= giveBalance
             await data.save()
             return message.reply(`Removed ${giveBalance} from users.${args[2]}.balance (Currently at ${data.balance})`)
