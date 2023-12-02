@@ -51,7 +51,8 @@ export default {
             const data = await User.findOne({ id: args[1] })
             const giveBalance = parseFloat(args[2])
             if (!data) {
-                data = new User({ id: args[1] })
+                let naber = await new User({ id: args[1] })
+                await naber.save()
                 return message.reply(`Created database entry for the user, try again`)
             }
             data.balance += giveBalance
@@ -63,7 +64,8 @@ export default {
             const data = await User.findOne({ id: args[1] })
             const giveBalance = parseFloat(args[2])
             if (!data) {
-                data = new User({ id: args[1] })
+                let naber = await new User({ id: args[1] })
+                await naber.save()
                 return message.reply(`Created database entry for the user, try again`)
             }
             data.balance -= giveBalance
