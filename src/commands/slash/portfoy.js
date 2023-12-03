@@ -20,7 +20,7 @@ export default {
         const portfolio = await Portfolio.findOne({ userId: user_id });
         if (!portfolio) {
             try {
-                createPortfolio(user_id)
+                await createPortfolio(user_id)
                 errorEmbed.setDescription(`Lütfen tekrar dene`)
                 return interaction.editReply({ content:'', embeds: [errorEmbed] })
             } catch (err) {
@@ -64,7 +64,6 @@ export default {
                     stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} ₺`
                 }
                 const totalPrice = await getStockValue(stock.symbol, stock.quantity);
-
 
                 totalValue += totalPrice;
 
