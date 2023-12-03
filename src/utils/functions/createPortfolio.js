@@ -2,7 +2,7 @@ import Portfolio from "../db/portfolio.js";
 
 export default async function createPortfolio(id) {
     try {
-        const existingPortfolio = await Portfolio.findOne({ id });
+        const existingPortfolio = await Portfolio.findOne({ userId: id });
         if (!existingPortfolio) {
             try {
                 const newPortfolio = new Portfolio({ userId: id })
