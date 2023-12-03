@@ -23,6 +23,7 @@ const portfolioSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        alias: 'user_id',
     },
     stocks: [stockSchema],
 });

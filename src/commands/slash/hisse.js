@@ -3,6 +3,7 @@ import User from '../../utils/db/users.js'
 import { EmbedBuilder } from "discord.js";
 import getStockPrice from "../../utils/functions/getStockPrice.js";
 import Portfolio from "../../utils/db/portfolio.js";
+import createPortfolio from "../../utils/functions/createPortfolio.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,7 +24,7 @@ export default {
         const portfolio = await Portfolio.findOne({ userId: user.id });
         if (!portfolio) {
             try {
-                createPortfolio(user.id)
+                await createPortfolio(user.id)
                 errorEmbed.setDescription(`Lütfen tekrar dene`)
                 return interaction.editReply({ content:'', embeds: [errorEmbed] })
             } catch (err) {

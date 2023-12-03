@@ -4,6 +4,7 @@ import getPortfolio from '../../utils/functions/getPortfolio.js';
 import addStockToPortfolio from '../../utils/functions/addStockToPortfolio.js';
 import { getTotalPortfolioValue } from '../../utils/functions/portfolioUtils.js';
 import getStockPrice from '../../utils/functions/getStockPrice.js';
+import createPortfolio from '../../utils/functions/createPortfolio.js';
 
 export default {
     name: "dev",
@@ -12,6 +13,8 @@ export default {
     run: async (client, message, args) => {
         if (message.author.id != process.env.OWNER_ID) return
         if (args[0] == "test") {
+            let user_id = message.author.id
+            await createPortfolio(user_id)
             // console.log(await getStockPrice(`${args[1]}`))
             // // const portfolio = await Portfolio.findOne({ userId: `${args[1]}` }) || new Portfolio({ userId: args[1] })
             // // portfolio.save()
@@ -30,10 +33,10 @@ export default {
             // }
             // await getPortfolio(args[1])
 
-            const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
-            userData.balance += parseFloat(args[2])
-            userData.save()
-            return message.reply(`Added ${args[2]} to users.${args[1]}.balance (Currently at ${userData.balance})`)
+            // const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
+            // userData.balance += parseFloat(args[2])
+            // userData.save()
+            // return message.reply(`Added ${args[2]} to users.${args[1]}.balance (Currently at ${userData.balance})`)
         }
         if (args[0] == "role") {
             if (args[2] != 0) {

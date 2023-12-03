@@ -20,8 +20,8 @@ export default {
         const portfolio = await Portfolio.findOne({ userId: user_id });
         if (!portfolio) {
             try {
-                await createPortfolio(user_id)
-                errorEmbed.setDescription(`Lütfen tekrar dene`)
+                Portfolio.create({ userId: user_id })
+                errorEmbed.setDescription(`Portföyün oluşturuldu (galiba) tekrar dene.`)
                 return interaction.editReply({ content:'', embeds: [errorEmbed] })
             } catch (err) {
                 console.log(err)

@@ -6,6 +6,7 @@ import { getExchangeRate } from "../../utils/functions/portfolioUtils.js";
 import removeStockFromPortfolio from "../../utils/functions/removeStockFromPortfolio.js";
 import Portfolio from "../../utils/db/portfolio.js";
 import getStockPrice from "../../utils/functions/getStockPrice.js";
+import createPortfolio from "../../utils/functions/createPortfolio.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -45,7 +46,7 @@ export default {
         const portfolio = await Portfolio.findOne({ userId: user.id });
         if (!portfolio) {
             try {
-                createPortfolio(user.id)
+                await createPortfolio(user.id)
                 errorEmbed.setDescription(`Lütfen tekrar dene`)
                 return interaction.editReply({ content:'', embeds: [errorEmbed] })
             } catch (err) {
@@ -59,13 +60,11 @@ export default {
                 errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
-            // TODO: açılım öncesi emir vermeyi ekleyene kadar kapalı
-            // CLOSED - PRE - PREPRE - REGULAR - POSTPOST - POST
-            /*
-            if (quoteInfo.marketState != "REGULAR") {
-                errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`)
-                return interaction.editReply({ content: '', embeds: [errorEmbed] })
-            }*/
+
+            if (quoteInfo.marketState !== "REGULAR" && quoteInfo.marketState !== "POST" && quoteInfo.marketState !== "PRE") {
+                errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`);
+                return interaction.editReply({ content: '', embeds: [errorEmbed] });
+            }
 
             if (quoteInfo.exchange === "IST") {
                 let price = quoteInfo.regularMarketPrice
@@ -109,13 +108,11 @@ export default {
                 errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
-
-            // TODO: açılım öncesi emir vermeyi ekleyene kadar kapalı
-            /*
-            if (quoteInfo.marketState != "REGULAR") {
-                errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`)
-                return interaction.editReply({ content: '', embeds: [errorEmbed] })
-            }*/
+            
+            if (quoteInfo.marketState !== "REGULAR" && quoteInfo.marketState !== "POST" && quoteInfo.marketState !== "PRE") {
+                errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`);
+                return interaction.editReply({ content: '', embeds: [errorEmbed] });
+            }
 
             if (quoteInfo.exchange === "IST") {
                 let price = quoteInfo.regularMarketPrice
