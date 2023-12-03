@@ -56,10 +56,11 @@ export default {
         if (orderType == "alis") {
             let quoteInfo = await getStockPrice(`${quote}`)
             if (quoteInfo == null) {
-                errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı.`)
+                errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
             // TODO: açılım öncesi emir vermeyi ekleyene kadar kapalı
+            // CLOSED - PRE - PREPRE - REGULAR - POSTPOST - POST
             /*
             if (quoteInfo.marketState != "REGULAR") {
                 errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`)
