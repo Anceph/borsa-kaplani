@@ -3,7 +3,7 @@ import User from '../../utils/db/users.js'
 import { ButtonStyle, EmbedBuilder } from "discord.js";
 import Portfolio from '../../utils/db/portfolio.js'
 import createPortfolio from "../../utils/functions/createPortfolio.js";
-import { getExchangeRate, getStockValue } from "../../utils/functions/portfolioUtils.js";
+import { getExchangeRate, getStockValue, getTotalPortfolioValue } from "../../utils/functions/portfolioUtils.js";
 import getStockPrice from "../../utils/functions/getStockPrice.js";
 
 export default {
@@ -11,7 +11,7 @@ export default {
         .setName("portfoy")
         .setDescription("Portföyünü kontrol et"),
     run: async (client, interaction) => {
-        await interaction.reply({ content: 'Hesaplanıyor...' })
+        await interaction.reply(`Hesaplanıyor...`)
         const user = interaction.member.user
         const user_id = user.id
         const userData = await User.findOne({ id: user.id }) || new User({ id: user.id })
@@ -22,34 +22,43 @@ export default {
             try {
                 Portfolio.create({ userId: user_id })
                 errorEmbed.setDescription(`Portföyün oluşturuldu (galiba) tekrar dene.`)
-                return interaction.editReply({ content:'', embeds: [errorEmbed] })
+                return interaction.editReply({ content: '', embeds: [errorEmbed] })
             } catch (err) {
                 console.log(err)
             }
         }
 
-        const stocksPerPage = 9;
-        const totalStocks = await portfolio.stocks.length;
-        const totalPages = Math.ceil(totalStocks / stocksPerPage);
-
-        let currentPage = 1;
+        const stocksPerPage = 9
+        const totalStocks = await portfolio.stocks.length
+        const totalPages = Math.ceil(totalStocks / stocksPerPage)
+        
+        let currentPage = 1
         const exchangeRate = await getExchangeRate()
-
+        let totalPortfolioValue = await getTotalPortfolioValue(portfolio)
+        
         const generateEmbed = async () => {
             let totalValue = 0;
-            const startIndex = (currentPage - 1) * stocksPerPage;
-            const endIndex = Math.min(startIndex + stocksPerPage, totalStocks);
+            const startIndex = (currentPage - 1) * stocksPerPage
+            // start (1 - 1) * 9 = 0 * 9 = 0
+            // next page (2 - 1) * 9 = 1 * 9 = 9
+            // previous page (1 - 1) * 9 = 0 * 9 = 0
+            const endIndex = Math.min(startIndex + stocksPerPage, totalStocks)
+            // start (0 + 9, 10) = 9
+            // next page (9 + 9, 10) = 10
+            // previous page (0 + 9, 10) = 9
 
             const embed = new EmbedBuilder()
                 .setColor('#0099ff')
                 .setTitle(`Portföy | ${user.username}`)
-                .setFooter({ text: `Hisseler güncel kurdan Türk Lirasına çevirilip değere yansıtılır\nSayfa ${currentPage}/${totalPages}` })
+                .setFooter({ text: `Hisseler güncel kurdan Türk Lirasına çevirilip değere yansıtılır.\nKur: ${exchangeRate} ₺\nSayfa ${currentPage}/${totalPages}` })
 
             for (let i = startIndex; i < endIndex; i++) {
-                const stock = portfolio.stocks[i];
+                const stock = portfolio.stocks[i]
                 const tempStock = await getStockPrice(stock.symbol)
+
                 let stockPrice
                 let profitLoss
+
                 if (tempStock.exchange === "IST") {
                     let naber = stock.purchasePrice * stock.quantity
                     let iyidir = tempStock.regularMarketPrice * stock.quantity
@@ -61,8 +70,9 @@ export default {
                     let iyidir = tempStock.regularMarketPrice * stock.quantity * exchangeRate
                     const profitLossAmount = iyidir - naber;
                     profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`;
-                    stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} ₺`
+                    stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} $`
                 }
+
                 const totalPrice = await getStockValue(stock.symbol, stock.quantity);
 
                 totalValue += totalPrice;
@@ -70,15 +80,10 @@ export default {
                 embed.addFields({ name: `${stock.symbol} (${stockPrice})`, value: `Adet: ${stock.quantity}\nDeğer: ${totalPrice.toFixed(2)} ₺\nKar / Zarar: ${profitLoss}`, inline: true });
             }
 
-            embed.setDescription(`Detaylı görünüm için /hisse\nToplam Portföy Değeri: ${totalValue.toFixed(2)} ₺`)
+            embed.setDescription(`Detaylı görünüm için /hisse\nToplam Portföy Değeri: ${totalPortfolioValue} ₺`)
 
             return embed
-        };
-
-        const prev_page = new ButtonBuilder()
-            .setCustomId('prev_page')
-            .setLabel('⬅️')
-            .setStyle(ButtonStyle.Primary)
+        }
 
         const next_page = new ButtonBuilder()
             .setCustomId('next_page')
@@ -86,34 +91,32 @@ export default {
             .setStyle(ButtonStyle.Primary)
 
         const row = new ActionRowBuilder()
-            .addComponents(prev_page, next_page)
+            .addComponents(next_page)
 
         if (await portfolio.stocks.length <= 9) {
-            const reply = await interaction.editReply({ content: '', embeds: [await generateEmbed()]});
+            const reply = await interaction.editReply({ content: '', embeds: [await generateEmbed()] });
         } else {
             const reply = await interaction.editReply({ content: '', embeds: [await generateEmbed()], components: [row] });
         }
 
-        const filter = (i) => i.customId === 'prev_page' || i.customId === 'next_page';
+        const filter = (i) => i.customId === 'next_page';
 
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
             time: 60000,
-        });
+        })
 
         collector.on('collect', async (i) => {
-            if (i.customId === 'prev_page' && currentPage > 1) {
-                currentPage--;
-            } else if (i.customId === 'next_page' && currentPage < totalPages) {
-                currentPage++;
+            if (i.customId === 'next_page' && currentPage < totalPages) {
+                currentPage++
+                let newEmbed = await generateEmbed()
+                await i.update({ embeds: [newEmbed] })
             }
+        })
 
-            await i.update({ embeds: [generateEmbed()] });
-        });
 
         collector.on('end', async () => {
             await interaction.editReply({ components: [] })
-        });
+        })
     }
-};
-
+}

@@ -39,7 +39,7 @@ export async function getStockValue(symbol, quantity) {
 
 export async function getExchangeRate() {
     try {
-        const response = await axios.get('https://ancephxyz.vercel.app/api/doviz/usd');
+        const response = await axios.get('https://magenta-crepe-90ac07.netlify.app/.netlify/functions/usd');
         const exchangeRate = response.data.exchangeRate.replace(',', '.');
         return parseFloat(exchangeRate);
     } catch (error) {

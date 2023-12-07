@@ -60,7 +60,7 @@ export default {
                 errorEmbed.setDescription(`Belirttiğiniz kodda bir hisse bulunamadı. İstanbul Borsasında ise sonuna '.IS' eklemeyi unutmayın.`)
                 return interaction.editReply({ content: '', embeds: [errorEmbed] })
             }
-
+            
             if (quoteInfo.marketState !== "REGULAR" && quoteInfo.marketState !== "POST" && quoteInfo.marketState !== "PRE") {
                 errorEmbed.setDescription(`${quote} hissesinin bulunduğu market şu an kapalı`);
                 return interaction.editReply({ content: '', embeds: [errorEmbed] });

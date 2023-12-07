@@ -13,25 +13,26 @@ export default {
     run: async (client, message, args) => {
         if (message.author.id != process.env.OWNER_ID) return
         if (args[0] == "test") {
-            let user_id = message.author.id
-            await createPortfolio(user_id)
+            // let user_id = message.author.id
+            // await createPortfolio(user_id)
             // console.log(await getStockPrice(`${args[1]}`))
             // // const portfolio = await Portfolio.findOne({ userId: `${args[1]}` }) || new Portfolio({ userId: args[1] })
             // // portfolio.save()
             // // const total = await getTotalPortfolioValue(portfolio)
             // // console.log(`${total}₺`)
 
-            // if (!args[1]) return message.reply(`Provide User ID`)
-            // if (!args[2]) return message.reply(`Provide a symbol`)
-            // if (!args[3]) return message.reply(`Provide quantity`)
-            // const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
-            // userData.save()
-            // if (args[5]) {
-            //     await addStockToPortfolio(`${args[1]}`, `${args[2]}`, `${args[3]}`, `${args[4]}`, `${args[5]}`)
-            // } else {
-            //     await addStockToPortfolio(`${args[1]}`, `${args[2]}`, `${args[3]}`, `${args[4]}`)
-            // }
-            // await getPortfolio(args[1])
+            if (!args[1]) return message.reply(`Provide User ID`)
+            if (!args[2]) return message.reply(`Provide a symbol`)
+            if (!args[3]) return message.reply(`Provide quantity`)
+            if (!args[4]) return message.reply(`Provide purchase price`)
+            const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
+            userData.save()
+            if (args[5]) {
+                await addStockToPortfolio(`${args[1]}`, `${args[2]}`, `${args[3]}`, `${args[4]}`, `${args[5]}`)
+            } else {
+                await addStockToPortfolio(`${args[1]}`, `${args[2]}`, `${args[3]}`, `${args[4]}`)
+            }
+            await getPortfolio(args[1])
 
             // const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
             // userData.balance += parseFloat(args[2])
