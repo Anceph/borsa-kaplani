@@ -37,15 +37,10 @@ export default {
         let totalPortfolioValue = await getTotalPortfolioValue(portfolio)
         
         const generateEmbed = async () => {
-            let totalValue = 0;
+            let totalValue = 0
+            let totalProfitLoss = 0
             const startIndex = (currentPage - 1) * stocksPerPage
-            // start (1 - 1) * 9 = 0 * 9 = 0
-            // next page (2 - 1) * 9 = 1 * 9 = 9
-            // previous page (1 - 1) * 9 = 0 * 9 = 0
             const endIndex = Math.min(startIndex + stocksPerPage, totalStocks)
-            // start (0 + 9, 10) = 9
-            // next page (9 + 9, 10) = 10
-            // previous page (0 + 9, 10) = 9
 
             const embed = new EmbedBuilder()
                 .setColor('#0099ff')
@@ -58,29 +53,32 @@ export default {
 
                 let stockPrice
                 let profitLoss
+                let profitLossAmount
 
                 if (tempStock.exchange === "IST") {
                     let naber = stock.purchasePrice * stock.quantity
                     let iyidir = tempStock.regularMarketPrice * stock.quantity
-                    const profitLossAmount = iyidir - naber;
-                    profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`;
+                    profitLossAmount = iyidir - naber
+                    profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`
                     stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} ₺`
                 } else {
                     let naber = stock.purchasePrice * stock.quantity * stock.exchangeRate
                     let iyidir = tempStock.regularMarketPrice * stock.quantity * exchangeRate
-                    const profitLossAmount = iyidir - naber;
-                    profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`;
+                    profitLossAmount = iyidir - naber
+                    profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`
                     stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} $`
                 }
 
-                const totalPrice = await getStockValue(stock.symbol, stock.quantity);
+                const totalPrice = await getStockValue(stock.symbol, stock.quantity)
 
-                totalValue += totalPrice;
+                totalProfitLoss += profitLossAmount
+                totalValue += totalPrice
 
-                embed.addFields({ name: `${stock.symbol} (${stockPrice})`, value: `Adet: ${stock.quantity}\nDeğer: ${totalPrice.toFixed(2)} ₺\nKar / Zarar: ${profitLoss}`, inline: true });
+                embed.addFields({ name: `${stock.symbol} (${stockPrice})`, value: `Adet: ${stock.quantity}\nDeğer: ${totalPrice.toFixed(2)} ₺\nKar / Zarar: ${profitLoss}`, inline: true })
             }
 
-            embed.setDescription(`Detaylı görünüm için /hisse\nToplam Portföy Değeri: ${totalPortfolioValue} ₺`)
+            let naber = `${totalProfitLoss >= 0 ? '+' : '-'}${Math.abs(totalProfitLoss).toFixed(2)} ₺`
+            embed.setDescription(`Detaylı görünüm için /hisse\nToplam Portföy Değeri: ${totalPortfolioValue} ₺\nToplam Kar / Zarar: ${naber}`)
 
             return embed
         }
