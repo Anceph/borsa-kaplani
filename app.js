@@ -6,6 +6,18 @@ import 'dotenv/config'
 import mongoose from 'mongoose'
 import checkPriceAlerts from "./src/utils/functions/priceAlerts.js";
 
+process.on('unhandledRejection', async (reason, promise) => {
+    const channelId = '1068159885918871554'
+    const channel = client.channels.cache.get(channelId)
+    if (!channel) {
+        console.error('Channel not found')
+        return
+    }
+    if (channel.isText()) {
+        await channel.send(`Unhandled Rejection at: ${promise}\nReason: ${reason}`)
+    }
+});
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.MessageContent], shards: "auto", partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.Reaction, Partials.GuildScheduledEvent, Partials.User, Partials.ThreadMember] });
 
 client.commands = new Collection()
