@@ -1,22 +1,10 @@
-import { Client, Partials, GatewayIntentBits, Collection } from "discord.js";
-import { readdirSync } from "fs";
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v10';
+import { Client, Partials, GatewayIntentBits, Collection, EmbedBuilder } from "discord.js"
+import { readdirSync } from "fs"
+import { REST } from '@discordjs/rest'
+import { Routes } from 'discord-api-types/v10'
 import 'dotenv/config'
 import mongoose from 'mongoose'
-import checkPriceAlerts from "./src/utils/functions/priceAlerts.js";
-
-process.on('unhandledRejection', async (reason, promise) => {
-    const channelId = '1068159885918871554'
-    const channel = client.channels.cache.get(channelId)
-    if (!channel) {
-        console.error('Channel not found')
-        return
-    }
-    if (channel.isText()) {
-        await channel.send(`Unhandled Rejection at: ${promise}\nReason: ${reason}`)
-    }
-});
+import checkPriceAlerts from "./src/utils/functions/priceAlerts.js"
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMessageTyping, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions, GatewayIntentBits.DirectMessageTyping, GatewayIntentBits.MessageContent], shards: "auto", partials: [Partials.Message, Partials.Channel, Partials.GuildMember, Partials.Reaction, Partials.GuildScheduledEvent, Partials.User, Partials.ThreadMember] });
 
@@ -69,6 +57,21 @@ client.on("ready", async () => {
         );
 
         setInterval(() => checkPriceAlerts(client), 10000)
+
+        process.on('unhandledRejection', async (reason, promise) => {
+            console.log('Unhandled Rejection', reason)
+            const channel = client.channels.cache.get('1068159885918871554');
+            const embed = new EmbedBuilder()
+                .setTitle('Unhandled Rejection')
+                .setDescription(`Reason: ${reason.message}\nStack: ${reason.stack}`)
+                .setColor('#FF0000')
+                .setTimestamp()
+
+            if (channel) {
+                await channel.send({ embeds: [embed] });
+            }
+        });
+        
     } catch (err) {
         console.error(err);
     }
@@ -77,3 +80,9 @@ client.on("ready", async () => {
 })
 
 client.login(process.env.BOT_TOKEN)
+
+setTimeout(() => {
+    new Promise((resolve, reject) => {
+        reject(new Error('This is a test error'));
+    });
+}, 3000);
