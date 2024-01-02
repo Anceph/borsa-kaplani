@@ -58,19 +58,19 @@ client.on("ready", async () => {
 
         setInterval(() => checkPriceAlerts(client), 10000)
 
-        process.on('unhandledRejection', async (reason, promise) => {
-            console.log('Unhandled Rejection', reason)
-            const channel = client.channels.cache.get('1068159885918871554');
-            const embed = new EmbedBuilder()
-                .setTitle('Unhandled Rejection')
-                .setDescription(`Reason: ${reason.message}\nStack: ${reason.stack}`)
-                .setColor('#FF0000')
-                .setTimestamp()
+        // process.on('unhandledRejection', async (reason, promise) => {
+        //     console.log('Unhandled Rejection', reason)
+        //     const channel = client.channels.cache.get('1068159885918871554');
+        //     const embed = new EmbedBuilder()
+        //         .setTitle('Unhandled Rejection')
+        //         .setDescription(`Reason: ${reason.message}\nStack: ${reason.stack}`)
+        //         .setColor('#FF0000')
+        //         .setTimestamp()
 
-            if (channel) {
-                await channel.send({ embeds: [embed] });
-            }
-        });
+        //     if (channel) {
+        //         await channel.send({ embeds: [embed] });
+        //     }
+        // });
         
     } catch (err) {
         console.error(err);
@@ -80,3 +80,9 @@ client.on("ready", async () => {
 })
 
 client.login(process.env.BOT_TOKEN)
+
+// setTimeout(() => {
+//     new Promise((resolve, reject) => {
+//         reject(new Error('This is a test error'));
+//     });
+// }, 3000);

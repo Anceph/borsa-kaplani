@@ -1,4 +1,4 @@
-import { InteractionType } from "discord.js";
+import { InteractionType, EmbedBuilder } from "discord.js";
 
 export default {
 	name: 'interactionCreate',
@@ -6,11 +6,23 @@ export default {
 		let client = interaction.client;
 		if (interaction.type == InteractionType.ApplicationCommand) {
 			if (interaction.user.bot) return;
+			const command = client.slashcommands.get(interaction.commandName)
 			try {
-				const command = client.slashcommands.get(interaction.commandName)
-				command.run(client, interaction)
-			} catch {
-				interaction.reply({ content: "An error occurred while running the command. Please try again.", ephemeral: true })
+				await command.run(client, interaction);
+			} catch (error) {
+				const channel = client.channels.cache.get('1068159885918871554');
+				const embed = new EmbedBuilder()
+					.setTitle('Error')
+					.setDescription(`Command: **${interaction.commandName}**\nError: ${error.message}\nStack: ${error.stack}`)
+					.setColor('#FF0000')
+					.setTimestamp();
+				if (channel) {
+					try {
+						await channel.send({ embeds: [embed] });
+					} catch (error) {
+						console.error('Failed to send message:', error);
+					}
+				}
 			}
 		}
 	}
