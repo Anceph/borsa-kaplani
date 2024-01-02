@@ -80,9 +80,3 @@ client.on("ready", async () => {
 })
 
 client.login(process.env.BOT_TOKEN)
-
-setTimeout(() => {
-    new Promise((resolve, reject) => {
-        reject(new Error('This is a test error'));
-    });
-}, 3000);
