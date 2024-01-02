@@ -7,7 +7,6 @@ export default {
         .setName("bakiye")
         .setDescription("Bakiyeni kontrol et"),
     run: async (client, interaction) => {
-        throw new Error('This is a test error');
         const user = interaction.member.user
         const userData = await User.findOne({ id: user.id }) || new User({ id: user.id })
         userData.save()
