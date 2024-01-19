@@ -3,7 +3,7 @@ import User from '../../utils/db/users.js'
 import { ButtonStyle, EmbedBuilder } from "discord.js";
 import Portfolio from '../../utils/db/portfolio.js'
 import createPortfolio from "../../utils/functions/createPortfolio.js";
-import { getExchangeRate, getStockValue, getTotalPortfolioValue } from "../../utils/functions/portfolioUtils.js";
+import { getExchangeRate, getProfitLoss, getStockValue, getTotalPortfolioValue } from "../../utils/functions/portfolioUtils.js";
 import getStockPrice from "../../utils/functions/getStockPrice.js";
 
 export default {
@@ -27,7 +27,7 @@ export default {
                 console.log(err)
             }
         }
-
+        
         const stocksPerPage = 9
         const totalStocks = await portfolio.stocks.length
         const totalPages = Math.ceil(totalStocks / stocksPerPage)
@@ -41,11 +41,13 @@ export default {
             let totalProfitLoss = 0
             const startIndex = (currentPage - 1) * stocksPerPage
             const endIndex = Math.min(startIndex + stocksPerPage, totalStocks)
-
+            
             const embed = new EmbedBuilder()
-                .setColor('#0099ff')
-                .setTitle(`Portföy | ${user.username}`)
-                .setFooter({ text: `Hisseler güncel kurdan Türk Lirasına çevirilip değere yansıtılır.\nKur: ${exchangeRate} ₺\nSayfa ${currentPage}/${totalPages}` })
+            .setColor('#0099ff')
+            .setTitle(`Portföy | ${user.username}`)
+            .setFooter({ text: `Hisseler güncel kurdan Türk Lirasına çevirilip değere yansıtılır.\nKur: ${exchangeRate} ₺\nSayfa ${currentPage}/${totalPages}` })
+            
+            let realTotalProfitLoss = await getProfitLoss(portfolio)
 
             for (let i = startIndex; i < endIndex; i++) {
                 const stock = portfolio.stocks[i]
@@ -58,12 +60,14 @@ export default {
                 if (tempStock.exchange === "IST") {
                     let naber = stock.purchasePrice * stock.quantity
                     let iyidir = tempStock.regularMarketPrice * stock.quantity
+                    // subtracting the current price from the purchase price
                     profitLossAmount = iyidir - naber
                     profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`
                     stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} ₺`
                 } else {
                     let naber = stock.purchasePrice * stock.quantity * stock.exchangeRate
                     let iyidir = tempStock.regularMarketPrice * stock.quantity * exchangeRate
+                    // subtracting the current price from the purchase price
                     profitLossAmount = iyidir - naber
                     profitLoss = `${profitLossAmount >= 0 ? '+' : '-'}${Math.abs(profitLossAmount).toFixed(2)} ₺`
                     stockPrice = `${tempStock.regularMarketPrice.toFixed(2)} $`
@@ -77,7 +81,7 @@ export default {
                 embed.addFields({ name: `${stock.symbol} (${stockPrice})`, value: `Adet: ${stock.quantity}\nDeğer: ${totalPrice.toFixed(2)} ₺\nKar / Zarar: ${profitLoss}`, inline: true })
             }
 
-            let naber = `${totalProfitLoss >= 0 ? '+' : '-'}${Math.abs(totalProfitLoss).toFixed(2)} ₺`
+            let naber = `${realTotalProfitLoss >= 0 ? '+' : '-'}${Math.abs(realTotalProfitLoss).toFixed(2)} ₺`
             embed.setDescription(`Detaylı görünüm için /hisse\nToplam Portföy Değeri: ${totalPortfolioValue} ₺\nToplam Kar / Zarar: ${naber}`)
 
             return embed
@@ -107,8 +111,9 @@ export default {
         collector.on('collect', async (i) => {
             if (i.customId === 'next_page' && currentPage < totalPages) {
                 currentPage++
+                await i.update({ content: 'Hesaplanıyor...' })
                 let newEmbed = await generateEmbed()
-                await i.update({ embeds: [newEmbed] })
+                await i.editReply({ content: '', embeds: [newEmbed] })
             }
         })
 

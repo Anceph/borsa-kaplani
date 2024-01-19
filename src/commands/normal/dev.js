@@ -2,7 +2,7 @@ import User from '../../utils/db/users.js'
 import Portfolio from '../../utils/db/portfolio.js';
 import getPortfolio from '../../utils/functions/getPortfolio.js';
 import addStockToPortfolio from '../../utils/functions/addStockToPortfolio.js';
-import { getTotalPortfolioValue } from '../../utils/functions/portfolioUtils.js';
+import { getProfitLoss, getTotalPortfolioValue } from '../../utils/functions/portfolioUtils.js';
 import getStockPrice from '../../utils/functions/getStockPrice.js';
 import createPortfolio from '../../utils/functions/createPortfolio.js';
 
@@ -20,6 +20,11 @@ export default {
             // // portfolio.save()
             // // const total = await getTotalPortfolioValue(portfolio)
             // // console.log(`${total}₺`)
+
+            // let portfolio = await Portfolio.findOne({ userId: `${args[1]}` }) || new Portfolio({ userId: args[1] })
+            // await portfolio.save()
+            // let naber = await getProfitLoss(portfolio)
+            // return console.log(naber)
 
             if (!args[1]) return message.reply(`Provide User ID`)
             if (!args[2]) return message.reply(`Provide a symbol`)
