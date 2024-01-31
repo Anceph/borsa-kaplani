@@ -81,5 +81,19 @@ export default {
             await data.save()
             return message.reply(`Removed ${giveBalance} from users.${args[2]}.balance (Currently at ${data.balance})`)
         }
+
+        if (args[0] == "check") {
+            if (!args[1]) return message.reply(`Provide User ID`)
+            if (!args[2]) return message.reply(`Provide a symbol`)
+
+            const userData = await User.findOne({ id: args[1] }) || new User({ id: args[1] })
+            userData.save()
+            const portfolio = await Portfolio.findOne({ userId: args[1] });
+
+            if (!portfolio) return message.reply(`Portföy bulunamadı.`)
+
+            let quote = portfolio.stocks.find(stock => stock.symbol === args[2])
+            return message.reply(`${quote}`)
+        }
     }
 };
