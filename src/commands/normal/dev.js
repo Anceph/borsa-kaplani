@@ -66,7 +66,7 @@ export default {
             }
             data.balance += giveBalance
             await data.save()
-            return message.reply(`Added ${giveBalance} to users.${args[2]}.balance (Currently at ${data.balance})`)
+            return message.reply(`Added ${giveBalance} to users.${args[1]}.balance (Currently at ${data.balance})`)
         }
 
         if (args[0] == "take") {
@@ -79,7 +79,7 @@ export default {
             }
             data.balance -= giveBalance
             await data.save()
-            return message.reply(`Removed ${giveBalance} from users.${args[2]}.balance (Currently at ${data.balance})`)
+            return message.reply(`Removed ${giveBalance} from users.${args[1]}.balance (Currently at ${data.balance})`)
         }
 
         if (args[0] == "check") {
